@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: multitasking360
+    env: static
+    buildCommand: ""
+    staticPublishPath: .
+    routes:
+      - type: rewrite
+        source: /editorial
+        destination: /editorial.html
+      - type: rewrite
+        source: /corporate
+        destination: /corporate.html
