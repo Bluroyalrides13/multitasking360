@@ -1414,21 +1414,9 @@
       const form = e.currentTarget;
       const submitButton = form.querySelector("button[type='submit']");
       const successEl = document.getElementById("formSuccess");
-      const primaryEndpoint = "https://app.bluroyaladventures.com/api/multitasking360/applications";
-      const fallbackEndpoint = "/api/applications";
+      const endpoint = "https://app.bluroyaladventures.com/api/applications";
 
-      const multitaskingPayload = {
-        first_name: form.elements.first_name.value,
-        last_name: form.elements.last_name.value,
-        email: form.elements.email.value,
-        instagram_handle: form.elements.instagram_handle.value,
-        phone: form.elements.phone.value,
-        industry: form.elements.industry.value,
-        program: form.elements.program.value,
-        goal: form.elements.goal.value,
-      };
-
-      const fallbackPayload = {
+      const payload = {
         name: `${form.elements.first_name.value} ${form.elements.last_name.value}`.trim(),
         email: form.elements.email.value,
         instagram_handle: form.elements.instagram_handle.value,
@@ -1444,19 +1432,11 @@
       submitButton.textContent = "Enviando...";
 
       try {
-        let response = await fetch(primaryEndpoint, {
+        const response = await fetch(endpoint, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(multitaskingPayload),
+          body: JSON.stringify(payload),
         });
-
-        if (response.status === 404) {
-          response = await fetch(fallbackEndpoint, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(fallbackPayload),
-          });
-        }
 
         if (!response.ok) {
           throw new Error("No se pudo enviar la solicitud");
