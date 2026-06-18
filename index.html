@@ -1307,28 +1307,28 @@
           <div class="form-row">
             <div class="form-group">
               <label>Nombre</label>
-              <input type="text" placeholder="Tu nombre" required />
+              <input type="text" name="first_name" placeholder="Tu nombre" required />
             </div>
 
             <div class="form-group">
               <label>Apellido</label>
-              <input type="text" placeholder="Tu apellido" />
+              <input type="text" name="last_name" placeholder="Tu apellido" />
             </div>
           </div>
 
           <div class="form-group">
             <label>Correo Electrónico</label>
-            <input type="email" placeholder="tu@correo.com" required />
+            <input type="email" name="email" placeholder="tu@correo.com" required />
           </div>
 
           <div class="form-group">
             <label>Telefono / WhatsApp</label>
-            <input type="tel" placeholder="+1 (555) 000-0000" />
+            <input type="tel" name="phone" placeholder="+1 (555) 000-0000" />
           </div>
 
           <div class="form-group">
             <label>Tu Industria / Experiencia</label>
-            <select>
+            <select name="industry">
               <option value="">Selecciona tu área...</option>
               <option>Salud / Medicina</option>
               <option>Educación / Enseñanza</option>
@@ -1345,7 +1345,7 @@
 
           <div class="form-group">
             <label>Programa de Interés</label>
-            <select>
+            <select name="program">
               <option value="">Selecciona un programa...</option>
               <option>Free Starter Session ($0)</option>
               <option>QuickStart Sprint ($47)</option>
@@ -1361,7 +1361,7 @@
 
           <div class="form-group">
             <label>¿Cuál es tu mayor meta ahora mismo?</label>
-            <textarea placeholder="Cuéntanos qué esperas lograr..."></textarea>
+            <textarea name="goal" placeholder="Cuéntanos qué esperas lograr..."></textarea>
           </div>
 
           <button type="submit" class="btn-primary submit">Enviar Mi Solicitud</button>
@@ -1403,10 +1403,49 @@
   </footer>
 
   <script>
-    document.getElementById("intakeForm").addEventListener("submit", function (e) {
+    document.getElementById("intakeForm").addEventListener("submit", async function (e) {
       e.preventDefault();
-      this.style.display = "none";
-      document.getElementById("formSuccess").style.display = "block";
+
+      const form = e.currentTarget;
+      const submitButton = form.querySelector("button[type='submit']");
+      const successEl = document.getElementById("formSuccess");
+      const isStandalone = window.location.hostname === "multitasking360.onrender.com";
+      const endpoint = isStandalone
+        ? "https://app.bluroyaladventures.com/api/multitasking360/applications"
+        : "/api/multitasking360/applications";
+
+      const payload = {
+        first_name: form.elements.first_name.value,
+        last_name: form.elements.last_name.value,
+        email: form.elements.email.value,
+        phone: form.elements.phone.value,
+        industry: form.elements.industry.value,
+        program: form.elements.program.value,
+        goal: form.elements.goal.value,
+      };
+
+      submitButton.disabled = true;
+      submitButton.textContent = "Enviando...";
+
+      try {
+        const response = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+          throw new Error("No se pudo enviar la solicitud");
+        }
+
+        form.style.display = "none";
+        successEl.style.display = "block";
+      } catch (error) {
+        alert("No se pudo enviar tu solicitud. Intenta nuevamente en unos segundos.");
+      } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = "Enviar Mi Solicitud";
+      }
     });
 
     const revealItems = document.querySelectorAll(".reveal");
